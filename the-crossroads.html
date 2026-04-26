@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Crossroads · MoMo Creative</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%231c2a36'/%3E%3Cline x1='16' y1='4' x2='16' y2='28' stroke='%237EB6FF' stroke-width='2.5' stroke-linecap='round' opacity='0.7'/%3E%3Cline x1='4' y1='16' x2='28' y2='16' stroke='%237EB6FF' stroke-width='2.5' stroke-linecap='round' opacity='0.7'/%3E%3Cline x1='7' y1='7' x2='25' y2='25' stroke='%23e8c468' stroke-width='2' stroke-linecap='round' opacity='0.45'/%3E%3Cline x1='25' y1='7' x2='7' y2='25' stroke='%23e8c468' stroke-width='2' stroke-linecap='round' opacity='0.45'/%3E%3Ccircle cx='16' cy='16' r='3.5' fill='%237EB6FF' opacity='0.95'/%3E%3Ccircle cx='16' cy='16' r='1.8' fill='%23ffffff' opacity='0.9'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: 'DM Sans', system-ui, sans-serif; }
+  button { font-family: 'DM Sans', system-ui, sans-serif; }
+  input, select, textarea { font-family: 'DM Sans', system-ui, sans-serif; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(180,168,145,0.2); border-radius: 3px; }
+</style>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+  const { useState, useEffect, useCallback, useRef, createContext, useContext } = React;
+
+  // ─── VERSION ───
+  const VERSION = "1.1";
+  const VERSION_DATE = "March 2026";
+
+  // ─── CONTEXT ───
+  const Ctx = createContext({});
+
+  // ─── STORAGE KEY ───
+  const STORE_KEY = 'attmtia-crossroads';
+
+  // ─── GENERATE ID ───
+  const genId = () => Math.random().toString(36).slice(2,10);
+
+  // ─── PERSON COLOURS (assigned on import, stable) ───
+  const PERSON_COLOURS = [
+    "#e8c468","#7EB6FF","#81C784","#F48FB1","#CE93D8",
+    "#80DEEA","#FFCC80","#A5D6A7","#90CAF9","#EF9A9A",
+    "#B39DDB","#80CBC4","#FFF176","#FFAB91","#C5E1A5",
+    "#FFE082","#B0BEC5","#F8BBD0","#DCEDC8","#E1BEE7",
+  ];
+
+  // ─── MOMO CREATIVE LOGO (base64) ───
+  const momoIcon = "data:image/jpeg;base64,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";
+
+  // ─── THEME ───
+  const buildT = (lm) => {
+    const D = {
+      bg:        "#1a1714",
+      bg2:       "#201d18",
+      bg3:       "#252018",
+      text:      "#ede0c8",
+      textMid:   "#d4c8b0",
+      textDim:   "#b0a080",
+      textDimmer:"#8a7860",
+      border:    "rgba(180,168,145,0.15)",
+      borderMid: "rgba(180,168,145,0.28)",
+      inputBg:   "#2a2420",
+    };
+    const L = {
+      bg:        "#f5f0e8",
+      bg2:       "#ede8dc",
+      bg3:       "#e6e0d4",
+      text:      "#1a1008",
+      textMid:   "#2e2010",
+      textDim:   "#5a3e28",
+      textDimmer:"#8a6a50",
+      border:    "rgba(100,80,60,0.18)",
+      borderMid: "rgba(100,80,60,0.32)",
+      inputBg:   "#e8e0d0",
+    };
+    const T = lm ? L : D;
+    return {
+      T,
+      app:    { display:"flex", flexDirection:"column", height:"100vh", background:T.bg, color:T.text },
+      header: { display:"flex", alignItems:"center", justifyContent:"space-between",
+                padding:"0 28px", height:62, borderBottom:`1px solid ${T.border}`,
+                background:T.bg2, flexShrink:0 },
+      headerTitle: { fontFamily:"'Cormorant Garamond',Georgia,serif", fontSize:26,
+                     fontWeight:400, color:T.text, letterSpacing:"0.02em" },
+      headerSub:   { fontSize:14, color:T.textDim, marginTop:2, fontStyle:"italic",
+                     fontFamily:"'Cormorant Garamond',Georgia,serif" },
+      nav:    { display:"flex", gap:6, padding:"10px 28px", borderBottom:`1px solid ${T.border}`,
+                background:T.bg2, flexShrink:0, flexWrap:"wrap", alignItems:"center" },
+      navBtn: { padding:"7px 20px", borderRadius:4, cursor:"pointer", fontSize:14,
+                border:`1px solid ${T.borderMid}`, background:"transparent",
+                color:T.textDim, transition:"all 0.2s ease" },
+      navBtnActive: { padding:"7px 20px", borderRadius:4, cursor:"pointer", fontSize:14,
+                border:`1px solid ${lm?"rgba(100,70,30,0.5)":"rgba(197,168,130,0.5)"}`,
+                background:lm?"rgba(100,70,30,0.12)":"rgba(197,168,130,0.12)",
+                color:lm?"#5a3010":"#d4aa60", fontWeight:600, transition:"all 0.2s ease" },
+      main:   { flex:1, overflowY:"auto" },
+      btn:    { padding:"9px 22px", borderRadius:5, cursor:"pointer", fontSize:14,
+                border:`1px solid ${T.borderMid}`, background:"transparent",
+                color:T.textMid, fontFamily:"'DM Sans',system-ui,sans-serif",
+                transition:"all 0.2s ease" },
+      btnPrimary: { padding:"9px 22px", borderRadius:5, cursor:"pointer", fontSize:14, fontWeight:600,
+                border:`1px solid ${lm?"rgba(41,128,185,0.55)":"rgba(126,182,255,0.5)"}`,
+                background:lm?"rgba(41,128,185,0.12)":"rgba(126,182,255,0.12)",
+                color:lm?"#1a4a72":"#90C8FF",
+                fontFamily:"'DM Sans',system-ui,sans-serif", transition:"all 0.2s ease" },
+      btnDanger: { padding:"7px 18px", borderRadius:5, cursor:"pointer", fontSize:13,
+                border:"1px solid rgba(192,57,43,0.4)", background:"rgba(192,57,43,0.08)",
+                color:lm?"#8b1a1a":"#e88070",
+                fontFamily:"'DM Sans',system-ui,sans-serif" },
+      card:   { background:T.bg2, border:`1px solid ${T.borderMid}`, borderRadius:8,
+                padding:"20px 24px" },
+      input:  { width:"100%", padding:"9px 13px", background:T.inputBg,
+                border:`1px solid ${T.borderMid}`, borderRadius:5, color:T.text,
+                fontSize:14, outline:"none" },
+      divider:{ height:1, background:T.border, margin:"20px 0" },
+      // Modal styles
+      overlay:{ position:"fixed", inset:0, background:"rgba(0,0,0,0.72)",
+                display:"flex", alignItems:"center", justifyContent:"center",
+                zIndex:200, padding:20 },
+      modal:  { background:T.bg2, border:`1px solid ${T.borderMid}`, borderRadius:10,
+                padding:"28px 32px", maxWidth:640, width:"100%",
+                maxHeight:"88vh", overflowY:"auto",
+                boxShadow:"0 24px 60px rgba(0,0,0,0.5)" },
+      sectionHead: { fontSize:10, fontWeight:700, color:T.textDimmer,
+                textTransform:"uppercase", letterSpacing:"0.1em",
+                fontFamily:"'DM Sans',system-ui,sans-serif", marginBottom:8 },
+      prose: { fontSize:14, color:T.textDim, lineHeight:1.8,
+               fontFamily:"'Cormorant Garamond',Georgia,serif" },
+    };
+  };
+
+  // ─── MAIN APP ───
+  function Crossroads() {
+    const [lightMode, setLightMode] = useState(() => localStorage.getItem('attmtia-cr-lm') === '1');
+    const S = buildT(lightMode);
+    const T = S.T;
+
+    const [people, setPeople] = useState(() => {
+      try { return JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); }
+      catch { return []; }
+    });
+    const [view, setView] = useState("roster");
+    const [focusPerson, setFocusPerson] = useState(null);
+    const [importMsg, setImportMsg] = useState(null);
+    const [showAbout, setShowAbout] = useState(false);
+    const [showShare, setShowShare] = useState(false);
+
+    useEffect(() => {
+      localStorage.setItem(STORE_KEY, JSON.stringify(people));
+    }, [people]);
+
+    const toggleLight = () => setLightMode(lm => {
+      const next = !lm;
+      localStorage.setItem('attmtia-cr-lm', next ? '1' : '0');
+      return next;
+    });
+
+    // ─── IMPORT: new arrival or update by name+birthYear ───
+    const handleImport = (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      e.target.value = "";
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const imported = JSON.parse(ev.target.result);
+          if (imported.type !== "attmtia-shared-self") {
+            setImportMsg({ kind:"error", text:"This doesn't look like a Shared Self file. Export from All The Me That I Am → Privacy Review → Bring to the Crossroads." });
+            return;
+          }
+          const { person } = imported;
+          const matchIdx = people.findIndex(p =>
+            p.person.name === person.name && p.person.birthYear === person.birthYear
+          );
+          if (matchIdx >= 0) {
+            const updated = [...people];
+            updated[matchIdx] = {
+              ...updated[matchIdx],
+              updatedAt: new Date().toISOString(),
+              person: imported.person,
+              events: imported.events || [],
+              strands: imported.strands || [],
+              worldEvents: imported.worldEvents || [],
+            };
+            setPeople(updated);
+            setImportMsg({ kind:"success", text:`${person.name}'s shared self has been updated.` });
+          } else {
+            const colour = PERSON_COLOURS[people.length % PERSON_COLOURS.length];
+            setPeople(prev => [...prev, {
+              id: genId(),
+              colour,
+              importedAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              person: imported.person,
+              events: imported.events || [],
+              strands: imported.strands || [],
+              worldEvents: imported.worldEvents || [],
+            }]);
+            setImportMsg({ kind:"success", text:`${person.name} has arrived at the Crossroads.` });
+          }
+        } catch {
+          setImportMsg({ kind:"error", text:"Could not read that file. Please try again." });
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    // ─── PER-PERSON UPDATE (fixes Roster Update button) ───
+    const handlePersonUpdate = (personId, e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      e.target.value = "";
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const imported = JSON.parse(ev.target.result);
+          if (imported.type !== "attmtia-shared-self") {
+            setImportMsg({ kind:"error", text:"This doesn't look like a Shared Self file." });
+            return;
+          }
+          setPeople(prev => prev.map(p =>
+            p.id === personId ? {
+              ...p,
+              updatedAt: new Date().toISOString(),
+              person: imported.person,
+              events: imported.events || [],
+              strands: imported.strands || [],
+              worldEvents: imported.worldEvents || [],
+            } : p
+          ));
+          setImportMsg({ kind:"success", text:`${imported.person.name}'s shared self has been updated.` });
+        } catch {
+          setImportMsg({ kind:"error", text:"Could not read that file. Please try again." });
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    const withdrawPerson = (id) => {
+      const p = people.find(p => p.id === id);
+      if (!p) return;
+      if (!confirm(`Remove ${p.person.name} from the Crossroads entirely?\n\nThis cannot be undone here — they can always bring a new Shared Self file to return.`)) return;
+      setPeople(prev => prev.filter(p => p.id !== id));
+      if (focusPerson === id) { setFocusPerson(null); setView("roster"); }
+      setImportMsg({ kind:"info", text:`${p.person.name} has stepped back from the Crossroads.` });
+    };
+
+    const ctx = { S, T, lightMode, people, setPeople, withdrawPerson, handlePersonUpdate, setView, setFocusPerson };
+
+    return (
+      <Ctx.Provider value={ctx}>
+        <div style={S.app}>
+
+          {/* ─── HEADER ─── */}
+          <div style={S.header}>
+            <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+              <img
+                src={momoIcon}
+                alt="MoMo Creative"
+                onClick={() => setShowAbout(true)}
+                style={{ width:38, height:38, borderRadius:8, flexShrink:0,
+                  cursor:"pointer", opacity:0.9, transition:"opacity 0.2s" }}
+                title="About The Crossroads"
+              />
+              <div>
+                <div style={S.headerTitle}>The Crossroads</div>
+                <div style={S.headerSub}>
+                  {people.length === 0
+                    ? "Waiting for the first arrival"
+                    : `${people.length} ${people.length === 1 ? "life" : "lives"} gathered here`}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display:"flex", gap:10, alignItems:"center" }}>
+              <label style={{
+                ...S.btnPrimary, display:"inline-flex", alignItems:"center",
+                gap:7, cursor:"pointer", userSelect:"none",
+              }}>
+                <span style={{fontSize:15}}>⬆</span>
+                <span>Receive a Shared Self</span>
+                <input type="file" accept=".json" onChange={handleImport} style={{display:"none"}}/>
+              </label>
+              <button onClick={() => { setShowAbout(true); }} style={{
+                ...S.btn, padding:"7px 14px", fontSize:13,
+              }}>About</button>
+              <button onClick={() => setShowShare(true)} style={{
+                padding:"7px 14px", borderRadius:5, cursor:"pointer", fontSize:13,
+                border:`1px solid ${lightMode?"rgba(60,120,80,0.35)":"rgba(100,200,130,0.3)"}`,
+                background:lightMode?"rgba(39,174,96,0.07)":"rgba(39,174,96,0.08)",
+                color:lightMode?"#1a6b3a":"#81C784",
+                fontFamily:"'DM Sans',system-ui,sans-serif",
+                display:"inline-flex", alignItems:"center", gap:5,
+                transition:"all 0.2s",
+              }} title="Invite someone to try this">✉ Pass it on</button>
+              <a href="https://ko-fi.com/momocreative" target="_blank" rel="noopener noreferrer"
+                style={{
+                  padding:"7px 14px", borderRadius:5, cursor:"pointer", fontSize:13,
+                  border:`1px solid ${lightMode?"rgba(180,120,0,0.4)":"rgba(230,180,60,0.4)"}`,
+                  background:lightMode?"rgba(180,120,0,0.08)":"rgba(230,180,60,0.08)",
+                  color:lightMode?"#7a4f00":"#e8c468",
+                  fontFamily:"'DM Sans',system-ui,sans-serif",
+                  textDecoration:"none", display:"inline-flex", alignItems:"center", gap:5,
+                  transition:"all 0.2s",
+                }}>♡ Contribute</a>
+              <button onClick={toggleLight} style={{
+                ...S.btn, padding:"7px 12px", fontSize:16,
+              }} title="Toggle light/dark">{lightMode ? "🌙" : "☀️"}</button>
+            </div>
+          </div>
+
+          {/* ─── IMPORT MESSAGE ─── */}
+          {importMsg && (
+            <div style={{
+              padding:"10px 28px", fontSize:13, flexShrink:0,
+              background: importMsg.kind==="success"
+                ? (lightMode?"rgba(39,174,96,0.1)":"rgba(39,174,96,0.12)")
+                : importMsg.kind==="error"
+                  ? (lightMode?"rgba(192,57,43,0.1)":"rgba(192,57,43,0.12)")
+                  : (lightMode?"rgba(41,128,185,0.1)":"rgba(41,128,185,0.12)"),
+              color: importMsg.kind==="success"
+                ? (lightMode?"#1a6b3a":"#81C784")
+                : importMsg.kind==="error"
+                  ? (lightMode?"#8b1a1a":"#e07070")
+                  : (lightMode?"#1a4a6b":"#7EB6FF"),
+              borderBottom:`1px solid ${T.border}`,
+              display:"flex", justifyContent:"space-between", alignItems:"center",
+            }}>
+              <span>{importMsg.text}</span>
+              <button onClick={() => setImportMsg(null)} style={{
+                background:"none", border:"none", cursor:"pointer",
+                color:"inherit", fontSize:16, lineHeight:1, opacity:0.6,
+              }}>×</button>
+            </div>
+          )}
+
+          {/* ─── NAV ─── */}
+          {people.length > 0 && (
+            <div style={S.nav}>
+              {[
+                { id:"roster",   label:"Roster" },
+                { id:"ayear",    label:"A Year" },
+                { id:"onelife",  label:"One Life" },
+                { id:"twolives", label:"Two Lives" },
+              ].map(v => (
+                <button key={v.id}
+                  style={view===v.id ? S.navBtnActive : S.navBtn}
+                  onClick={() => setView(v.id)}>
+                  {v.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* ─── MAIN CONTENT ─── */}
+          <div style={S.main}>
+            {people.length === 0
+              ? <EmptyState onAbout={() => setShowAbout(true)} />
+              : view === "roster"   ? <RosterView/>
+              : view === "ayear"    ? <AYearView/>
+              : view === "onelife"  ? <OneLifeView focusId={focusPerson} setFocusId={setFocusPerson}/>
+              : view === "twolives" ? <TwoLivesView/>
+              : null
+            }
+          </div>
+
+          {/* ─── ABOUT MODAL ─── */}
+          {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
+          {/* ─── SHARE MODAL ─── */}
+          {showShare && <ShareModal onClose={() => setShowShare(false)} people={people} />}
+        </div>
+      </Ctx.Provider>
+    );
+  }
+
+  // ─── EMPTY STATE ───
+  function EmptyState({ onAbout }) {
+    const { S, T } = useContext(Ctx);
+    return (
+      <div style={{
+        display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+        height:"100%", padding:40, textAlign:"center",
+      }}>
+        <img src={momoIcon} alt="MoMo Creative"
+          style={{ width:56, height:56, borderRadius:12, marginBottom:20, opacity:0.7 }} />
+        <div style={{
+          fontFamily:"'Cormorant Garamond',Georgia,serif",
+          fontSize:32, fontWeight:300, color:T.text, marginBottom:12,
+        }}>
+          The Crossroads is empty.
+        </div>
+        <div style={{
+          fontFamily:"'Cormorant Garamond',Georgia,serif",
+          fontSize:16, color:T.textDim, lineHeight:1.8, maxWidth:480, marginBottom:32,
+        }}>
+          A crossroads only becomes one when more than one path arrives.<br/>
+          Bring the first Shared Self to begin.
+        </div>
+        <div style={{
+          fontSize:15, color:T.textDim, lineHeight:1.8, maxWidth:460,
+          padding:"18px 24px", border:`1px solid ${T.borderMid}`, borderRadius:8,
+          background:T.bg2, marginBottom:20,
+        }}>
+          In <strong style={{color:T.textMid}}>All The Me That I Am</strong>, open the{" "}
+          <strong style={{color:T.textMid}}>🔒 Privacy</strong> view, review your events,
+          then click <strong style={{color:T.textMid}}>⬆ Bring to the Crossroads</strong> to
+          export your Shared Self. Bring that file here using the button above.
+        </div>
+        <button onClick={onAbout} style={{
+          fontSize:13, color:T.textDimmer, background:"none", border:"none",
+          cursor:"pointer", textDecoration:"underline", fontFamily:"'DM Sans',system-ui,sans-serif",
+        }}>Learn more about how the Crossroads works</button>
+      </div>
+    );
+  }
+
+  // ─── ROSTER VIEW ───
+  function RosterView() {
+    const { S, T, lightMode, people, withdrawPerson, handlePersonUpdate } = useContext(Ctx);
+    const totalEvents = people.reduce((n, p) => n + p.events.length, 0);
+
+    return (
+      <div style={{ padding:"32px 40px", maxWidth:900, margin:"0 auto" }}>
+        <div style={{
+          fontFamily:"'Cormorant Garamond',Georgia,serif",
+          fontSize:26, fontWeight:400, color:T.text, marginBottom:6,
+        }}>
+          Who is here
+        </div>
+        <div style={{
+          fontSize:14, color:T.textDim, marginBottom:28,
+          fontFamily:"'Cormorant Garamond',Georgia,serif", fontStyle:"italic",
+        }}>
+          {people.length} {people.length===1?"life":"lives"} · {totalEvents} shared {totalEvents===1?"moment":"moments"} between them
+        </div>
+
+        <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+          {people.map((p) => {
+            const age = p.person.birthYear
+              ? new Date().getFullYear() - p.person.birthYear
+              : null;
+            const updated = new Date(p.updatedAt).toLocaleDateString("en-AU", {
+              day:"numeric", month:"long", year:"numeric"
+            });
+            return (
+              <div key={p.id} style={{
+                ...S.card,
+                borderLeft:`3px solid ${p.colour}`,
+                display:"flex", alignItems:"center", gap:20,
+              }}>
+                {/* Colour avatar */}
+                <div style={{
+                  width:44, height:44, borderRadius:"50%", flexShrink:0,
+                  background:`radial-gradient(circle at 35% 35%, ${p.colour}cc, ${p.colour}55)`,
+                  border:`2px solid ${p.colour}66`,
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  fontFamily:"'Cormorant Garamond',Georgia,serif",
+                  fontSize:18, color:T.text,
+                }}>
+                  {p.person.name.charAt(0).toUpperCase()}
+                </div>
+
+                {/* Info */}
+                <div style={{ flex:1 }}>
+                  <div style={{
+                    fontFamily:"'Cormorant Garamond',Georgia,serif",
+                    fontSize:20, fontWeight:400, color:T.text, marginBottom:2,
+                  }}>{p.person.name}</div>
+                  <div style={{ fontSize:15, color:T.textDim }}>
+                    {p.person.birthYear && `Born ${p.person.birthYear}`}
+                    {age !== null && ` · Age ${age}`}
+                    {p.person.lifeExpectancy && ` · Life expectancy ${p.person.lifeExpectancy}`}
+                  </div>
+                  <div style={{ fontSize:14, color:T.textDimmer, marginTop:3 }}>
+                    <span style={{ color:lightMode?"rgba(41,128,185,0.9)":"#90C8FF" }}>
+                      {p.events.length} shared {p.events.length===1?"event":"events"}
+                    </span>
+                    {p.strands?.length > 0 && (
+                      <span style={{ color:T.textDimmer }}>
+                        {" · "}{p.strands.length} {p.strands.length===1?"relationship":"relationships"}
+                      </span>
+                    )}
+                    {" · "}Last brought {updated}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div style={{ display:"flex", gap:8, flexShrink:0 }}>
+                  <label style={{ ...S.btn, padding:"7px 16px", fontSize:14,
+                    cursor:"pointer", display:"inline-flex", alignItems:"center", gap:5 }}
+                    title={`Update ${p.person.name}'s shared self`}>
+                    ↑ Update
+                    <input type="file" accept=".json" style={{display:"none"}}
+                      onChange={(e) => handlePersonUpdate(p.id, e)}
+                    />
+                  </label>
+                  <button style={S.btnDanger} onClick={() => withdrawPerson(p.id)}
+                    title={`Remove ${p.person.name} from the Crossroads`}>
+                    Withdraw
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* How it works note */}
+        <div style={{
+          marginTop:36, padding:"18px 22px", border:`1px solid ${T.borderMid}`,
+          borderRadius:8, fontSize:14, color:T.textDim, lineHeight:1.8,
+          background: lightMode?"rgba(0,0,0,0.03)":"rgba(255,255,255,0.02)",
+        }}>
+          <strong style={{color:T.textMid}}>How the Crossroads works.</strong>{" "}
+          Each person brings only what they chose to share — their private moments remain their own.
+          When someone updates their Shared Self, their previous version is replaced entirely.
+          To withdraw entirely, click Withdraw — they can always return with a new file.
+          The Crossroads never connects to anyone's original file directly.
+        </div>
+      </div>
+    );
+  }
+
+  // ─── A YEAR VIEW ───
+  function AYearView() {
+    const { S, T, lightMode, people } = useContext(Ctx);
+
+    const currentYear = new Date().getFullYear();
+    const allYears = people.flatMap(p => p.events.map(e => e.year)).filter(Boolean);
+    const minYear = allYears.length ? Math.min(...allYears) : currentYear - 50;
+    const maxYear = Math.max(currentYear, ...(allYears.length ? allYears : [currentYear]));
+
+    const [year, setYear] = useState(currentYear);
+
+    const profiles = people.map(p => {
+      const age = p.person.birthYear ? year - p.person.birthYear : null;
+      const alive = age !== null ? (age >= 0 && age <= p.person.lifeExpectancy) : true;
+      const activeEvents = p.events.filter(e => {
+        const start = e.year;
+        const end = e.endYear || e.year;
+        return year >= start && year <= end;
+      });
+      const pointEvents = p.events.filter(e => e.year === year && !e.endYear);
+      const spanEvents = p.events.filter(e => {
+        if (!e.endYear) return false;
+        return year >= e.year && year <= e.endYear;
+      });
+      return { p, age, alive, pointEvents, spanEvents, activeEvents };
+    }).filter(pr => pr.alive);
+
+    return (
+      <div style={{ padding:"28px 40px", maxWidth:960, margin:"0 auto" }}>
+        <div style={{ marginBottom:28 }}>
+          <div style={{
+            fontFamily:"'Cormorant Garamond',Georgia,serif",
+            fontSize:26, fontWeight:400, color:T.text, marginBottom:4,
+          }}>
+            A Year
+          </div>
+          <div style={{
+            fontSize:14, color:T.textDim, marginBottom:20,
+            fontFamily:"'Cormorant Garamond',Georgia,serif", fontStyle:"italic",
+          }}>
+            Move through time. See what each person was living.
+          </div>
+
+          <div style={{ display:"flex", alignItems:"center", gap:20, flexWrap:"wrap" }}>
+            <div style={{
+              fontFamily:"'Cormorant Garamond',Georgia,serif",
+              fontSize:48, fontWeight:300, color:T.text, lineHeight:1, minWidth:90,
+            }}>{year}</div>
+            <div style={{ flex:1, minWidth:200 }}>
+              <input type="range" min={minYear} max={maxYear} step={1} value={year}
+                onChange={e => setYear(parseInt(e.target.value))}
+                style={{ width:"100%", cursor:"pointer" }}/>
+              <div style={{ display:"flex", justifyContent:"space-between",
+                fontSize:14, color:T.textDim, marginTop:4 }}>
+                <span>{minYear}</span>
+                <span>{maxYear}</span>
+              </div>
+            </div>
+            <div style={{ display:"flex", gap:8 }}>
+              <button style={S.btn} onClick={() => setYear(y => Math.max(minYear, y-1))}>◀</button>
+              <button style={S.btn} onClick={() => setYear(currentYear)}>Now</button>
+              <button style={S.btn} onClick={() => setYear(y => Math.min(maxYear, y+1))}>▶</button>
+            </div>
+          </div>
+        </div>
+
+        {profiles.length === 0 ? (
+          <div style={{
+            textAlign:"center", padding:40,
+            fontFamily:"'Cormorant Garamond',Georgia,serif",
+            fontSize:18, color:T.textDim, fontStyle:"italic",
+          }}>
+            No one at the Crossroads was yet born in {year}, or all have passed beyond it.
+          </div>
+        ) : (
+          <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+            {profiles.map(({ p, age, pointEvents, spanEvents, activeEvents }) => (
+              <div key={p.id} style={{ ...S.card, borderLeft:`3px solid ${p.colour}` }}>
+                <div style={{ display:"flex", alignItems:"baseline", gap:12, marginBottom:10 }}>
+                  <span style={{
+                    fontFamily:"'Cormorant Garamond',Georgia,serif",
+                    fontSize:20, fontWeight:400, color:T.text,
+                  }}>{p.person.name}</span>
+                  {age !== null && (
+                    <span style={{ fontSize:14, color:p.colour, fontWeight:500 }}>Age {age}</span>
+                  )}
+                  {activeEvents.length === 0 && (
+                    <span style={{
+                      fontSize:15, color:T.textDimmer, fontStyle:"italic",
+                      fontFamily:"'Cormorant Garamond',Georgia,serif",
+                    }}>— nothing recorded here</span>
+                  )}
+                </div>
+
+                {activeEvents.length > 0 && (
+                  <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                    {pointEvents.map(ev => (
+                      <div key={ev.id} style={{
+                        display:"flex", alignItems:"flex-start", gap:10,
+                        padding:"6px 10px", borderRadius:4,
+                        background: lightMode?"rgba(0,0,0,0.03)":"rgba(255,255,255,0.03)",
+                      }}>
+                        <span style={{
+                          width:8, height:8, borderRadius:"50%", flexShrink:0, marginTop:5,
+                          background: ev.layerColor || p.colour,
+                        }}/>
+                        <div>
+                          <div style={{ fontSize:15, color:T.text, lineHeight:1.5 }}>{ev.title}</div>
+                          {ev.notes && (
+                            <div style={{ fontSize:14, color:T.textDim, marginTop:3,
+                              fontStyle:"italic", lineHeight:1.5 }}>{ev.notes}</div>
+                          )}
+                          <div style={{ fontSize:13, color:T.textDimmer, marginTop:2 }}>
+                            {ev.layerLabel}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {spanEvents.map(ev => (
+                      <div key={ev.id} style={{
+                        display:"flex", alignItems:"flex-start", gap:10,
+                        padding:"6px 10px", borderRadius:4,
+                        background: lightMode?"rgba(0,0,0,0.02)":"rgba(255,255,255,0.02)",
+                        borderLeft:`2px solid ${ev.layerColor || p.colour}66`,
+                      }}>
+                        <div style={{flexShrink:0, marginTop:4}}>
+                          <div style={{ width:8, height:2, background: ev.layerColor || p.colour, borderRadius:1 }}/>
+                        </div>
+                        <div>
+                          <div style={{ fontSize:15, color:T.textMid, lineHeight:1.5 }}>
+                            {ev.title}
+                            <span style={{ fontSize:13, color:T.textDimmer, marginLeft:8 }}>
+                              {ev.year}–{ev.endYear}
+                            </span>
+                          </div>
+                          <div style={{ fontSize:13, color:T.textDimmer, marginTop:2 }}>
+                            {ev.layerLabel} · ongoing in {year}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ─── ONE LIFE VIEW ───
+  function OneLifeView({ focusId, setFocusId }) {
+    const { S, T, lightMode, people } = useContext(Ctx);
+    const [selectedId, setSelectedId] = useState(focusId || (people[0]?.id || null));
+    const [groupBy, setGroupBy] = useState("decade");
+
+    const person = people.find(p => p.id === selectedId);
+
+    if (!person) return (
+      <div style={{ padding:40, color:T.textDim, fontStyle:"italic",
+        fontFamily:"'Cormorant Garamond',Georgia,serif", fontSize:18, textAlign:"center" }}>
+        Select a person from the roster.
+      </div>
+    );
+
+    const events = [...person.events].sort((a,b) => (a.year||0)-(b.year||0));
+
+    const byDecade = {};
+    events.forEach(ev => {
+      const decade = Math.floor((ev.year||0)/10)*10;
+      const key = `${decade}s`;
+      if (!byDecade[key]) byDecade[key] = { label:`${decade}s`, decade, events:[] };
+      byDecade[key].events.push(ev);
+    });
+    const decadeGroups = Object.values(byDecade).sort((a,b) => a.decade - b.decade);
+
+    const byLayer = {};
+    events.forEach(ev => {
+      const key = ev.layer || "other";
+      if (!byLayer[key]) byLayer[key] = { label: ev.layerLabel || key, color: ev.layerColor || "#888", events:[] };
+      byLayer[key].events.push(ev);
+    });
+    const layerGroups = Object.values(byLayer).sort((a,b) => b.events.length - a.events.length);
+    const groups = groupBy === "decade" ? decadeGroups : layerGroups;
+
+    const age = person.person.birthYear ? new Date().getFullYear() - person.person.birthYear : null;
+
+    return (
+      <div style={{ padding:"28px 40px", maxWidth:860, margin:"0 auto" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:16, marginBottom:24, flexWrap:"wrap" }}>
+          <div style={{ flex:1 }}>
+            <div style={{
+              fontFamily:"'Cormorant Garamond',Georgia,serif",
+              fontSize:26, fontWeight:400, color:T.text, marginBottom:2,
+            }}>One Life</div>
+            <div style={{ fontSize:14, color:T.textDim, fontStyle:"italic",
+              fontFamily:"'Cormorant Garamond',Georgia,serif" }}>
+              The shared self of one person, seen whole.
+            </div>
+          </div>
+          <select value={selectedId || ""} onChange={e => setSelectedId(e.target.value)}
+            style={{ ...S.input, width:"auto", minWidth:160 }}>
+            {people.map(p => (
+              <option key={p.id} value={p.id}>{p.person.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div style={{
+          ...S.card, borderLeft:`3px solid ${person.colour}`,
+          display:"flex", gap:20, marginBottom:24, alignItems:"center",
+        }}>
+          <div style={{
+            width:50, height:50, borderRadius:"50%", flexShrink:0,
+            background:`radial-gradient(circle at 35% 35%, ${person.colour}cc, ${person.colour}44)`,
+            border:`2px solid ${person.colour}66`,
+            display:"flex", alignItems:"center", justifyContent:"center",
+            fontFamily:"'Cormorant Garamond',Georgia,serif", fontSize:22, color:T.text,
+          }}>{person.person.name.charAt(0)}</div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontFamily:"'Cormorant Garamond',Georgia,serif",
+              fontSize:22, color:T.text, marginBottom:3 }}>{person.person.name}</div>
+            <div style={{ fontSize:13, color:T.textDim }}>
+              {person.person.birthYear && `Born ${person.person.birthYear}`}
+              {age !== null && ` · Age ${age}`}
+              {" · "}
+              <span style={{ color:person.colour }}>{events.length} shared {events.length===1?"moment":"moments"}</span>
+            </div>
+          </div>
+          <div style={{ display:"flex", gap:6 }}>
+            {["decade","layer"].map(g => (
+              <button key={g} onClick={() => setGroupBy(g)} style={{
+                padding:"5px 12px", borderRadius:20, fontSize:12, cursor:"pointer",
+                border: groupBy===g
+                  ? `1px solid ${lightMode?"rgba(100,70,30,0.4)":"rgba(197,168,130,0.35)"}`
+                  : `1px solid ${T.border}`,
+                background: groupBy===g
+                  ? (lightMode?"rgba(100,70,30,0.08)":"rgba(197,168,130,0.08)")
+                  : "transparent",
+                color: groupBy===g ? (lightMode?"#5a3010":"#c8a870") : T.textDim,
+              }}>{g.charAt(0).toUpperCase()+g.slice(1)}</button>
+            ))}
+          </div>
+        </div>
+
+        {events.length === 0 ? (
+          <div style={{ textAlign:"center", padding:40,
+            fontFamily:"'Cormorant Garamond',Georgia,serif",
+            fontSize:16, color:T.textDim, fontStyle:"italic" }}>
+            {person.person.name} has not shared any events yet.
+          </div>
+        ) : (
+          <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
+            {groups.map(group => (
+              <div key={group.label}>
+                <div style={{
+                  display:"flex", alignItems:"center", gap:10,
+                  padding:"6px 12px", borderRadius:5, marginBottom:6,
+                  background: lightMode?"rgba(0,0,0,0.04)":"rgba(255,255,255,0.03)",
+                  border:`1px solid ${T.border}`,
+                }}>
+                  {group.color && (
+                    <span style={{ width:9, height:9, borderRadius:"50%",
+                      background:group.color, display:"inline-block", flexShrink:0 }}/>
+                  )}
+                  <span style={{ fontSize:13, fontWeight:700, color:T.textMid,
+                    textTransform:"uppercase", letterSpacing:"0.08em", flex:1 }}>
+                    {group.label}
+                  </span>
+                  <span style={{ fontSize:12, color:T.textDimmer }}>
+                    {group.events.length} {group.events.length===1?"event":"events"}
+                  </span>
+                </div>
+
+                {group.events.map(ev => (
+                  <div key={ev.id} style={{
+                    display:"flex", gap:12, padding:"8px 12px",
+                    borderBottom:`1px solid ${T.border}`, alignItems:"flex-start",
+                  }}>
+                    <span style={{
+                      fontSize:13, fontWeight:600, color:person.colour,
+                      width:42, flexShrink:0, paddingTop:1,
+                    }}>{ev.year}</span>
+                    <span style={{
+                      width:8, height:8, borderRadius:"50%", flexShrink:0,
+                      background: ev.layerColor || person.colour, marginTop:5,
+                    }}/>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:15, color:T.text, lineHeight:1.5 }}>
+                        {ev.title}
+                        {ev.endYear && (
+                          <span style={{ fontSize:13, color:T.textDimmer, marginLeft:8 }}>
+                            → {ev.endYear}
+                          </span>
+                        )}
+                      </div>
+                      {ev.notes && (
+                        <div style={{ fontSize:14, color:T.textDim, marginTop:3,
+                          fontStyle:"italic", lineHeight:1.5 }}>{ev.notes}</div>
+                      )}
+                      {groupBy === "decade" && (
+                        <div style={{ fontSize:13, color:T.textDimmer, marginTop:2 }}>
+                          {ev.layerLabel}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ─── TWO LIVES VIEW ───
+  function TwoLivesView() {
+    const { S, T, lightMode, people } = useContext(Ctx);
+    const [idA, setIdA] = useState(people[0]?.id || null);
+    const [idB, setIdB] = useState(people[1]?.id || null);
+
+    const pA = people.find(p => p.id === idA);
+    const pB = people.find(p => p.id === idB);
+
+    if (people.length < 2) return (
+      <div style={{ padding:40, textAlign:"center",
+        fontFamily:"'Cormorant Garamond',Georgia,serif",
+        fontSize:18, color:T.textDim, fontStyle:"italic" }}>
+        Two lives are needed for this view. Bring more Shared Selves to the Crossroads.
+      </div>
+    );
+
+    const allYears = [...new Set([
+      ...(pA?.events || []).map(e => e.year),
+      ...(pB?.events || []).map(e => e.year),
+    ])].filter(Boolean).sort((a,b) => a-b);
+
+    return (
+      <div style={{ padding:"28px 40px", maxWidth:1100, margin:"0 auto" }}>
+        <div style={{ fontFamily:"'Cormorant Garamond',Georgia,serif",
+          fontSize:26, fontWeight:400, color:T.text, marginBottom:4 }}>
+          Two Lives
+        </div>
+        <div style={{ fontSize:14, color:T.textDim, marginBottom:24,
+          fontFamily:"'Cormorant Garamond',Georgia,serif", fontStyle:"italic" }}>
+          Side by side across time — the years they shared, and the years they didn't.
+        </div>
+
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20, marginBottom:28 }}>
+          {[{id:idA,setId:setIdA,person:pA},{id:idB,setId:setIdB,person:pB}].map(({id,setId,person},i) => (
+            <div key={i} style={{
+              ...S.card,
+              borderLeft: person ? `3px solid ${person.colour}` : `3px solid ${T.border}`,
+              display:"flex", alignItems:"center", gap:12,
+            }}>
+              {person && (
+                <div style={{
+                  width:36, height:36, borderRadius:"50%", flexShrink:0,
+                  background:`radial-gradient(circle at 35% 35%, ${person.colour}cc, ${person.colour}44)`,
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  fontFamily:"'Cormorant Garamond',Georgia,serif", fontSize:16, color:T.text,
+                }}>{person.person.name.charAt(0)}</div>
+              )}
+              <select value={id||""} onChange={e => setId(e.target.value)}
+                style={{ ...S.input, flex:1 }}>
+                <option value="">— choose a person —</option>
+                {people.map(p => (
+                  <option key={p.id} value={p.id}>{p.person.name}</option>
+                ))}
+              </select>
+            </div>
+          ))}
+        </div>
+
+        {pA && pB && allYears.length > 0 && (
+          <div>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 60px 1fr",
+              gap:0, marginBottom:8 }}>
+              <div style={{ fontSize:16, fontWeight:700, color:pA.colour,
+                padding:"4px 12px" }}>{pA.person.name}</div>
+              <div/>
+              <div style={{ fontSize:16, fontWeight:700, color:pB.colour,
+                padding:"4px 12px", textAlign:"right" }}>{pB.person.name}</div>
+            </div>
+
+            {allYears.map(yr => {
+              const evA = pA.events.filter(e => e.year === yr || (e.endYear && yr >= e.year && yr <= e.endYear));
+              const evB = pB.events.filter(e => e.year === yr || (e.endYear && yr >= e.year && yr <= e.endYear));
+              const ageA = pA.person.birthYear ? yr - pA.person.birthYear : null;
+              const ageB = pB.person.birthYear ? yr - pB.person.birthYear : null;
+              const hasContent = evA.length > 0 || evB.length > 0;
+              if (!hasContent) return null;
+
+              return (
+                <div key={yr} style={{
+                  display:"grid", gridTemplateColumns:"1fr 60px 1fr",
+                  borderBottom:`1px solid ${T.border}`,
+                  background: lightMode?"rgba(0,0,0,0.01)":"rgba(255,255,255,0.01)",
+                  marginBottom:2,
+                }}>
+                  <div style={{ padding:"8px 12px" }}>
+                    {evA.map(ev => (
+                      <div key={ev.id} style={{ marginBottom:6 }}>
+                        <div style={{ fontSize:15, color:T.text, lineHeight:1.5 }}>{ev.title}</div>
+                        {ev.notes && <div style={{ fontSize:13, color:T.textDim,
+                          fontStyle:"italic", lineHeight:1.4 }}>{ev.notes}</div>}
+                        <div style={{ fontSize:13, color:T.textDimmer }}>{ev.layerLabel}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ display:"flex", flexDirection:"column",
+                    alignItems:"center", justifyContent:"center",
+                    borderLeft:`1px solid ${T.border}`, borderRight:`1px solid ${T.border}`,
+                    padding:"4px 0",
+                  }}>
+                    <span style={{ fontSize:14, fontWeight:700, color:T.textMid }}>{yr}</span>
+                    {ageA !== null && <span style={{ fontSize:12, color:pA.colour }}>{ageA}</span>}
+                    {ageB !== null && <span style={{ fontSize:12, color:pB.colour }}>{ageB}</span>}
+                  </div>
+
+                  <div style={{ padding:"8px 12px" }}>
+                    {evB.map(ev => (
+                      <div key={ev.id} style={{ marginBottom:6 }}>
+                        <div style={{ fontSize:15, color:T.text, lineHeight:1.5 }}>{ev.title}</div>
+                        {ev.notes && <div style={{ fontSize:13, color:T.textDim,
+                          fontStyle:"italic", lineHeight:1.4 }}>{ev.notes}</div>}
+                        <div style={{ fontSize:13, color:T.textDimmer }}>{ev.layerLabel}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {pA && pB && allYears.length === 0 && (
+          <div style={{ textAlign:"center", padding:40,
+            fontFamily:"'Cormorant Garamond',Georgia,serif",
+            fontSize:16, color:T.textDim, fontStyle:"italic" }}>
+            Neither person has shared events to compare yet.
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ─── SHARE / PASS IT ON MODAL ───
+  function ShareModal({ onClose, people }) {
+    const { S, T, lightMode } = useContext(Ctx);
+    const [toEmail, setToEmail]       = useState("");
+    const [personalNote, setPersonalNote] = useState("");
+    const [includeSharedSelf, setIncludeSharedSelf] = useState(false);
+    const [selectedPerson, setSelectedPerson] = useState(people[0]?.id || null);
+    const [appDownloaded, setAppDownloaded]   = useState(false);
+    const [dataDownloaded, setDataDownloaded] = useState(false);
+    const [step, setStep] = useState(1); // 1 = compose, 2 = send
+
+    const MOMO_SITE = "https://the-clan.wixsite.com/momocreative";
+    const KOFI      = "https://ko-fi.com/momocreative";
+
+    // Download a clean copy of the app (no localStorage — that's per-browser)
+    const downloadApp = () => {
+      const html = document.documentElement.outerHTML;
+      const blob = new Blob([html], { type:"text/html" });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement("a");
+      a.href     = url;
+      a.download = "the-crossroads.html";
+      a.click();
+      URL.revokeObjectURL(url);
+      setAppDownloaded(true);
+    };
+
+    // Re-export one person's Shared Self from the Crossroads data
+    const downloadSharedSelf = () => {
+      const p = people.find(p => p.id === selectedPerson);
+      if (!p) return;
+      const payload = {
+        type:        "attmtia-shared-self",
+        exportedAt:  new Date().toISOString(),
+        person:      p.person,
+        events:      p.events  || [],
+        strands:     p.strands || [],
+        worldEvents: p.worldEvents || [],
+      };
+      const blob     = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
+      const url      = URL.createObjectURL(blob);
+      const a        = document.createElement("a");
+      const safeName = (p.person.name || "shared-self").replace(/\s+/g,"-").toLowerCase();
+      a.href         = url;
+      a.download     = `crossroads-${safeName}-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setDataDownloaded(true);
+    };
+
+    // Build the mailto body
+    const buildEmailBody = () => {
+      const note = personalNote.trim();
+      const selectedP = people.find(p => p.id === selectedPerson);
+      const sharedSelfLine = includeSharedSelf && selectedP
+        ? `\nI've also attached my Shared Self — a small file with the parts of my own life I'm happy for you to see. You can import it into the Crossroads immediately to get a sense of how it works, and to see where our lives might line up.\n`
+        : "";
+
+      return encodeURIComponent(
+`${note ? note + "\n\n---\n\n" : ""}I wanted to pass something on to you.
+
+It's a free app called The Crossroads. It's for families, or people who are close enough that the question "what were you living, during the years I wasn't paying close enough attention?" starts to feel worth asking.
+
+The short version: you map your own life privately in a companion app called All The Me That I Am — your events, your relationships, the years that mattered. Then you decide what you're willing to share. The Crossroads holds the shared parts from multiple people, side by side, across time. You can ask where your lives ran alongside each other, and where they didn't. You can see what someone was carrying during a year you remember for something entirely different.
+
+No accounts. No internet connection. No tracking. Nothing leaves your device unless you choose to share it. You open it in a browser, and it's there.
+${sharedSelfLine}
+I've attached a copy of the app. Open it in any browser. Or download the latest version from the MoMo Creative website:
+${MOMO_SITE}
+
+If you find it useful and want to support the person who built it:
+${KOFI}
+
+The Crossroads is a place you arrive at. It doesn't summon you.`
+      );
+    };
+
+    const openEmail = () => {
+      const subject = encodeURIComponent("Something worth passing on — The Crossroads");
+      const to      = encodeURIComponent(toEmail.trim());
+      const body    = buildEmailBody();
+      window.open(`mailto:${to}?subject=${subject}&body=${body}`, "_self");
+    };
+
+    // ── shared panel colours ──
+    const panelColors = {
+      green:   { bg: lightMode?"#e8f8f5":"rgba(39,174,96,0.09)",  border:"#27ae60" },
+      amber:   { bg: lightMode?"#fef9e7":"rgba(220,168,40,0.11)", border:lightMode?"#e0a020":"#d4a020" },
+      blue:    { bg: lightMode?"#eaf4fb":"rgba(41,128,185,0.10)", border:"#3498db" },
+      neutral: { bg: lightMode?"rgba(0,0,0,0.03)":"rgba(255,255,255,0.03)", border:T.borderMid },
+    };
+    const Panel = ({ color="neutral", children, style }) => {
+      const c = panelColors[color] || panelColors.neutral;
+      return (
+        <div style={{ background:c.bg, borderLeft:`4px solid ${c.border}`,
+          borderRadius:4, padding:"14px 16px", marginBottom:14, ...style }}>
+          {children}
+        </div>
+      );
+    };
+
+    const inputStyle = {
+      width:"100%", padding:"9px 12px",
+      background:T.inputBg, border:`1px solid ${T.borderMid}`,
+      borderRadius:5, color:T.text, fontSize:14,
+      fontFamily:"'DM Sans',system-ui,sans-serif",
+      outline:"none", boxSizing:"border-box",
+    };
+    const labelStyle = {
+      fontSize:13, fontWeight:600, color:T.textMid, marginBottom:5, display:"block",
+      fontFamily:"'DM Sans',system-ui,sans-serif",
+    };
+    const P = ({ children, dim }) => (
+      <p style={{ fontSize:15, color: dim ? T.textDimmer : T.textMid,
+        lineHeight:1.8, fontFamily:"'Cormorant Garamond',Georgia,serif", marginBottom:8 }}>
+        {children}
+      </p>
+    );
+
+    return (
+      <div style={{ ...S.overlay }} onClick={onClose}>
+        <div style={{
+          ...S.modal, maxWidth:580, padding:0,
+          display:"flex", flexDirection:"column",
+        }} onClick={e => e.stopPropagation()}>
+
+          {/* Header */}
+          <div style={{
+            display:"flex", alignItems:"center", gap:16,
+            padding:"20px 26px 18px",
+            borderBottom:`1px solid ${T.border}`,
+            background: lightMode?"#3d6b8a":"#1c2a36",
+            flexShrink:0,
+          }}>
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:11, fontWeight:600, color:"rgba(255,255,255,0.5)",
+                textTransform:"uppercase", letterSpacing:"0.13em",
+                fontFamily:"'DM Sans',system-ui,sans-serif", marginBottom:3 }}>
+                MoMo Creative
+              </div>
+              <div style={{ fontFamily:"'Cormorant Garamond',Georgia,serif",
+                fontSize:22, fontWeight:400, color:"#fff" }}>
+                Pass it on
+              </div>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.55)",
+                fontFamily:"'DM Sans',system-ui,sans-serif", marginTop:3 }}>
+                Invite someone to try The Crossroads
+              </div>
+            </div>
+            <button onClick={onClose} style={{
+              background:"rgba(255,255,255,0.1)", border:"1px solid rgba(255,255,255,0.2)",
+              cursor:"pointer", color:"rgba(255,255,255,0.75)", fontSize:13,
+              padding:"4px 12px", borderRadius:4,
+              fontFamily:"'DM Sans',system-ui,sans-serif",
+            }}>Close</button>
+          </div>
+
+          {/* Body */}
+          <div style={{ flex:1, overflowY:"auto", padding:"24px 26px" }}>
+
+            <Panel color="blue">
+              <P>
+                The easiest way to share The Crossroads is by email. You'll download the app
+                file, attach it yourself, and send a pre-written note explaining what it is
+                and where to get the latest version.
+              </P>
+              <P dim>
+                No data leaves this device unless you choose. The app file is a clean copy
+                with no one's information in it — each person builds their own Crossroads
+                in their own browser.
+              </P>
+            </Panel>
+
+            {/* Step 1 — Who are you inviting */}
+            <div style={{ marginBottom:20 }}>
+              <div style={{ fontSize:14, fontWeight:700, color:T.text,
+                fontFamily:"'DM Sans',system-ui,sans-serif", marginBottom:14,
+                paddingBottom:8, borderBottom:`1px solid ${T.border}` }}>
+                Step 1 — Who are you inviting?
+              </div>
+              <label style={labelStyle}>Their email address <span style={{fontWeight:400,color:T.textDimmer}}>(optional — you can fill it in your email client)</span></label>
+              <input
+                type="email"
+                placeholder="e.g. someone@example.com"
+                value={toEmail}
+                onChange={e => setToEmail(e.target.value)}
+                style={inputStyle}
+              />
+            </div>
+
+            {/* Step 2 — Personal note */}
+            <div style={{ marginBottom:20 }}>
+              <div style={{ fontSize:14, fontWeight:700, color:T.text,
+                fontFamily:"'DM Sans',system-ui,sans-serif", marginBottom:14,
+                paddingBottom:8, borderBottom:`1px solid ${T.border}` }}>
+                Step 2 — Add a personal note <span style={{fontWeight:400,color:T.textDimmer}}>(optional)</span>
+              </div>
+              <label style={labelStyle}>A sentence or two in your own voice goes a long way</label>
+              <textarea
+                rows={3}
+                placeholder="e.g. I've been thinking about you and this seemed like something worth sharing…"
+                value={personalNote}
+                onChange={e => setPersonalNote(e.target.value)}
+                style={{ ...inputStyle, resize:"vertical", minHeight:72, lineHeight:1.6 }}
+              />
+            </div>
+
+            {/* Step 3 — Include a Shared Self? */}
+            {people.length > 0 && (
+              <div style={{ marginBottom:20 }}>
+                <div style={{ fontSize:14, fontWeight:700, color:T.text,
+                  fontFamily:"'DM Sans',system-ui,sans-serif", marginBottom:14,
+                  paddingBottom:8, borderBottom:`1px solid ${T.border}` }}>
+                  Step 3 — Include a Shared Self? <span style={{fontWeight:400,color:T.textDimmer}}>(optional)</span>
+                </div>
+                <Panel color="neutral">
+                  <P>
+                    If you're already at the Crossroads, you can re-export your own Shared Self
+                    and send it alongside the app. The recipient can import it straight away to
+                    see what the tool looks like with real data — and to see your life, as much
+                    as you've chosen to share it.
+                  </P>
+                </Panel>
+                <label style={{ display:"flex", alignItems:"center", gap:10,
+                  cursor:"pointer", marginBottom:12 }}>
+                  <input type="checkbox" checked={includeSharedSelf}
+                    onChange={e => setIncludeSharedSelf(e.target.checked)}
+                    style={{ width:16, height:16, cursor:"pointer" }} />
+                  <span style={{ fontSize:14, color:T.textMid,
+                    fontFamily:"'DM Sans',system-ui,sans-serif" }}>
+                    Include my Shared Self (I consent to sending this)
+                  </span>
+                </label>
+                {includeSharedSelf && (
+                  <div style={{ marginLeft:26 }}>
+                    {people.length > 1 && (
+                      <div style={{ marginBottom:10 }}>
+                        <label style={labelStyle}>Whose Shared Self?</label>
+                        <select value={selectedPerson}
+                          onChange={e => setSelectedPerson(e.target.value)}
+                          style={{ ...inputStyle, width:"auto" }}>
+                          {people.map(p => (
+                            <option key={p.id} value={p.id}>{p.person.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                    <button onClick={downloadSharedSelf} style={{
+                      padding:"8px 16px", borderRadius:5, cursor:"pointer",
+                      fontSize:13, fontWeight:600,
+                      border:`1px solid ${dataDownloaded?"#27ae60":T.borderMid}`,
+                      background: dataDownloaded
+                        ? (lightMode?"rgba(39,174,96,0.1)":"rgba(39,174,96,0.12)")
+                        : T.inputBg,
+                      color: dataDownloaded ? "#27ae60" : T.textMid,
+                      fontFamily:"'DM Sans',system-ui,sans-serif",
+                      display:"inline-flex", alignItems:"center", gap:7,
+                    }}>
+                      {dataDownloaded ? "✓ Shared Self downloaded" : "⬇ Download my Shared Self"}
+                    </button>
+                    {dataDownloaded && (
+                      <div style={{ fontSize:12, color:T.textDimmer, marginTop:6,
+                        fontFamily:"'DM Sans',system-ui,sans-serif", fontStyle:"italic" }}>
+                        Attach this .json file to your email alongside the app.
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Step 4 — Download the app */}
+            <div style={{ marginBottom:20 }}>
+              <div style={{ fontSize:14, fontWeight:700, color:T.text,
+                fontFamily:"'DM Sans',system-ui,sans-serif", marginBottom:14,
+                paddingBottom:8, borderBottom:`1px solid ${T.border}` }}>
+                Step {people.length > 0 ? 4 : 3} — Download the app to attach
+              </div>
+              <P>
+                This downloads a clean copy of The Crossroads — no one's data, just the app
+                itself. Attach it to your email before you send.
+              </P>
+              <P dim>
+                The recipient can also download the latest version directly from the MoMo
+                Creative website: <a href={MOMO_SITE} target="_blank" rel="noopener noreferrer"
+                style={{ color:lightMode?"#2980b9":"#7EB6FF", textDecoration:"none" }}>
+                the-clan.wixsite.com/momocreative</a>
+              </P>
+              <button onClick={downloadApp} style={{
+                padding:"9px 20px", borderRadius:5, cursor:"pointer",
+                fontSize:14, fontWeight:600,
+                border:`1px solid ${appDownloaded?"#27ae60":T.borderMid}`,
+                background: appDownloaded
+                  ? (lightMode?"rgba(39,174,96,0.1)":"rgba(39,174,96,0.12)")
+                  : T.inputBg,
+                color: appDownloaded ? "#27ae60" : T.textMid,
+                fontFamily:"'DM Sans',system-ui,sans-serif",
+                display:"inline-flex", alignItems:"center", gap:8,
+              }}>
+                {appDownloaded ? "✓ App downloaded" : "⬇ Download the-crossroads.html"}
+              </button>
+              {appDownloaded && (
+                <div style={{ fontSize:12, color:T.textDimmer, marginTop:8,
+                  fontFamily:"'DM Sans',system-ui,sans-serif", fontStyle:"italic" }}>
+                  Find it in your Downloads folder. Attach it to the email before sending.
+                </div>
+              )}
+            </div>
+
+            {/* Step 5 — Open email */}
+            <div style={{ marginBottom:4 }}>
+              <div style={{ fontSize:14, fontWeight:700, color:T.text,
+                fontFamily:"'DM Sans',system-ui,sans-serif", marginBottom:14,
+                paddingBottom:8, borderBottom:`1px solid ${T.border}` }}>
+                Step {people.length > 0 ? 5 : 4} — Open your email draft
+              </div>
+              <Panel color={appDownloaded ? "green" : "amber"}>
+                {!appDownloaded
+                  ? <P dim>Download the app file first, then open your email draft.</P>
+                  : <P dim>
+                      Your email client will open with a pre-written note. Read it over,
+                      attach the downloaded file{includeSharedSelf && dataDownloaded ? "s" : ""}, and send when ready.
+                    </P>
+                }
+              </Panel>
+              <button
+                onClick={appDownloaded ? openEmail : undefined}
+                style={{
+                  padding:"10px 22px", borderRadius:5, cursor: appDownloaded ? "pointer" : "default",
+                  fontSize:14, fontWeight:600,
+                  border:`1px solid ${appDownloaded?(lightMode?"#27ae60":"rgba(39,174,96,0.5)"):"rgba(150,150,150,0.3)"}`,
+                  background: appDownloaded
+                    ? (lightMode?"rgba(39,174,96,0.12)":"rgba(39,174,96,0.15)")
+                    : "transparent",
+                  color: appDownloaded ? (lightMode?"#1a6b3a":"#81C784") : T.textDimmer,
+                  fontFamily:"'DM Sans',system-ui,sans-serif",
+                  display:"inline-flex", alignItems:"center", gap:8,
+                  opacity: appDownloaded ? 1 : 0.45,
+                }} title={!appDownloaded ? "Download the app file first (step above)" : ""}>
+                {appDownloaded ? "✉ Open email draft" : "✉ Open email draft — download the app first"}
+              </button>
+            </div>
+
+          </div>
+
+          {/* Footer */}
+          <div style={{
+            padding:"12px 26px", borderTop:`1px solid ${T.border}`,
+            display:"flex", justifyContent:"space-between", alignItems:"center",
+            flexShrink:0, background:T.bg3,
+            fontSize:12, color:T.textDimmer,
+            fontFamily:"'DM Sans',system-ui,sans-serif",
+          }}>
+            <span style={{ fontStyle:"italic" }}>
+              The Crossroads is passed on person to person — that's enough.
+            </span>
+            <button onClick={onClose} style={{
+              ...S.btn, padding:"6px 18px", fontSize:13,
+            }}>Close</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── ABOUT MODAL ───
+  function AboutModal({ onClose, initialTab }) {
+    const { S, T, lightMode } = useContext(Ctx);
+    const [tab, setTab] = useState(initialTab || "what");
+
+    const tabs = [
+      { id:"what",       label:"What this is" },
+      { id:"philosophy", label:"The philosophy" },
+      { id:"howto",      label:"How to use" },
+      { id:"views",      label:"The views" },
+      { id:"privacy",    label:"Privacy" },
+      { id:"versions",   label:"Versions" },
+      { id:"contribute", label:"♡ Contribute" },
+    ];
+
+    // ── Colour panel (like MyLifeCanvas coloured sections) ──
+    const panelColors = {
+      green:   { bg: lightMode?"#e8f8f5":"rgba(39,174,96,0.09)",    border:"#27ae60" },
+      amber:   { bg: lightMode?"#fef9e7":"rgba(220,168,40,0.11)",   border:lightMode?"#e0a020":"#d4a020" },
+      blue:    { bg: lightMode?"#eaf4fb":"rgba(41,128,185,0.10)",   border:"#3498db" },
+      teal:    { bg: lightMode?"#e8f6f3":"rgba(22,160,133,0.09)",   border:"#16a085" },
+      red:     { bg: lightMode?"#fdf2f2":"rgba(192,57,43,0.09)",    border:"#c0392b" },
+      neutral: { bg: lightMode?"rgba(0,0,0,0.04)":"rgba(255,255,255,0.04)", border:T.borderMid },
+    };
+
+    const Panel = ({ color="neutral", title, children, style }) => {
+      const c = panelColors[color] || panelColors.neutral;
+      return (
+        <div style={{ background:c.bg, borderLeft:`4px solid ${c.border}`, borderRadius:4,
+          padding:"16px 18px", marginBottom:16, ...style }}>
+          {title && (
+            <div style={{ fontSize:14, fontWeight:700, color:T.text,
+              marginBottom:10, fontFamily:"'DM Sans',system-ui,sans-serif" }}>
+              {title}
+            </div>
+          )}
+          {children}
+        </div>
+      );
+    };
+
+    // ── Section with prominent h4-style heading ──
+    const Section = ({ title, children }) => (
+      <div style={{ marginBottom:26 }}>
+        <h4 style={{ fontSize:18, fontWeight:600, color:T.text, margin:"0 0 12px 0",
+          fontFamily:"'Cormorant Garamond',Georgia,serif", letterSpacing:"0.01em",
+          paddingBottom:8, borderBottom:`1px solid ${T.border}` }}>
+          {title}
+        </h4>
+        {children}
+      </div>
+    );
+
+    // ── Body prose ──
+    const P = ({ children, dim }) => (
+      <p style={{ fontSize:16, color: dim ? T.textDimmer : T.textMid, lineHeight:1.85,
+        fontFamily:"'Cormorant Garamond',Georgia,serif", marginBottom:10 }}>
+        {children}
+      </p>
+    );
+
+    // ── Bullet row ──
+    const Bullet = ({ label, children }) => (
+      <div style={{ display:"flex", gap:10, marginBottom:9, alignItems:"flex-start" }}>
+        <span style={{ color:T.textDimmer, flexShrink:0, marginTop:3, fontSize:14 }}>·</span>
+        <div style={{ fontSize:15, color:T.textMid, lineHeight:1.75,
+          fontFamily:"'DM Sans',system-ui,sans-serif" }}>
+          {label && <strong style={{ color:T.text }}>{label}:</strong>}{" "}{children}
+        </div>
+      </div>
+    );
+
+    // ── Small note text ──
+    const Note = ({ children }) => (
+      <div style={{ fontSize:13, color:T.textDim, lineHeight:1.7,
+        fontFamily:"'DM Sans',system-ui,sans-serif", fontStyle:"italic" }}>
+        {children}
+      </div>
+    );
+
+    return (
+      <div style={{ ...S.overlay }} onClick={onClose}>
+        <div style={{
+          ...S.modal, maxWidth:680, padding:0,
+          display:"flex", flexDirection:"column",
+        }} onClick={e => e.stopPropagation()}>
+
+          {/* ─── Modal header ─── */}
+          <div style={{
+            display:"flex", alignItems:"center", gap:16, padding:"22px 28px 20px",
+            borderBottom:`1px solid ${T.border}`, flexShrink:0,
+            background: lightMode?"#3d6b8a":"#1c2a36",
+          }}>
+            <img src={momoIcon} alt="MoMo Creative"
+              style={{ width:56, height:56, borderRadius:10, flexShrink:0,
+                border:"2px solid rgba(255,255,255,0.2)" }} />
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:11, fontWeight:600, color:"rgba(255,255,255,0.55)",
+                textTransform:"uppercase", letterSpacing:"0.14em",
+                fontFamily:"'DM Sans',system-ui,sans-serif", marginBottom:3 }}>
+                MoMo Creative
+              </div>
+              <div style={{ fontFamily:"'Cormorant Garamond',Georgia,serif",
+                fontSize:26, fontWeight:400, color:"#fff", lineHeight:1.15 }}>
+                The Crossroads
+              </div>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.6)",
+                fontFamily:"'DM Sans',system-ui,sans-serif", marginTop:4 }}>
+                Version {VERSION} · {VERSION_DATE} · Perth, Western Australia
+              </div>
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:8, alignItems:"flex-end" }}>
+              <a href="https://the-clan.wixsite.com/momocreative" target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize:13, color:"rgba(255,255,255,0.7)", textDecoration:"none",
+                  fontFamily:"'DM Sans',system-ui,sans-serif" }}>
+                🌐 Visit our website
+              </a>
+              <button onClick={onClose} style={{
+                background:"rgba(255,255,255,0.1)", border:"1px solid rgba(255,255,255,0.25)",
+                cursor:"pointer", color:"rgba(255,255,255,0.8)", fontSize:13, padding:"4px 12px",
+                borderRadius:4, fontFamily:"'DM Sans',system-ui,sans-serif",
+              }}>Close</button>
+            </div>
+          </div>
+
+          {/* ─── Tabs ─── */}
+          <div style={{
+            display:"flex", gap:0, padding:"0 16px",
+            borderBottom:`1px solid ${T.border}`, flexShrink:0,
+            overflowX:"auto", background:T.bg3,
+          }}>
+            {tabs.map(t => (
+              <button key={t.id} onClick={() => setTab(t.id)} style={{
+                padding:"11px 16px", cursor:"pointer",
+                fontSize:13, fontWeight: tab===t.id ? 600 : 400,
+                border:"none", borderBottom: tab===t.id
+                  ? `3px solid ${lightMode?"#3d6b8a":"#7EB6FF"}`
+                  : "3px solid transparent",
+                background:"transparent",
+                color: tab===t.id
+                  ? (lightMode?"#1a3a5a":"#90C8FF")
+                  : T.textDim,
+                fontFamily:"'DM Sans',system-ui,sans-serif",
+                whiteSpace:"nowrap", transition:"all 0.15s",
+              }}>{t.label}</button>
+            ))}
+          </div>
+
+          {/* ─── Tab content ─── */}
+          <div style={{ flex:1, overflowY:"auto", padding:"26px 30px" }}>
+
+            {/* ══ WHAT THIS IS ══ */}
+            {tab === "what" && (
+              <div>
+                <div style={{ textAlign:"center", marginBottom:24,
+                  fontFamily:"'Cormorant Garamond',Georgia,serif",
+                  fontSize:17, color:T.textDim, fontStyle:"italic", lineHeight:1.7 }}>
+                  A comparative instrument for lives that have done the work of reckoning with themselves.
+                </div>
+
+                <Section title="A different kind of space">
+                  <P>
+                    The Crossroads is not a bigger timeline. It is a space designed for a specific
+                    purpose: to allow questions to be asked across lives that cannot be asked from
+                    within any single life.
+                  </P>
+                  <P>
+                    What was my daughter living during the years I remember as my busiest? What was
+                    my mother carrying during the decade I was too young to notice? What threads run
+                    through this family that nobody knew were shared?
+                  </P>
+                  <P>
+                    These questions require more than one life to be present at the same time.
+                    The Crossroads is where lives can be placed alongside each other — carefully,
+                    deliberately, with full knowledge of what was kept private — and examined.
+                  </P>
+                </Section>
+
+                <Section title="How it relates to All The Me That I Am">
+                  <Panel color="teal">
+                    <P>
+                      These two applications are one system in two movements. <strong>All The Me That
+                      I Am</strong> is the private work — a single person mapping their own life
+                      honestly, in full, with nothing hidden from themselves.
+                    </P>
+                    <P>
+                      <strong>The Crossroads</strong> is what becomes possible after that work has been
+                      done and a person chooses to share a part of it. The Crossroads never knows what
+                      was kept private. That is not a technical limitation — it is the philosophical
+                      centre of the whole design.
+                    </P>
+                  </Panel>
+                </Section>
+
+                <Section title="What it holds">
+                  <Bullet>Each person who has brought a Shared Self file occupies one slot.</Bullet>
+                  <Bullet>Their slot contains only the events, relationships, and world context they chose to share.</Bullet>
+                  <Bullet>Everything else — private events, full backup data, any connection to their original file — is not here and never was.</Bullet>
+                  <Bullet>When someone updates their Shared Self, their slot is replaced entirely. The old version is gone.</Bullet>
+                  <Bullet>When someone withdraws, their slot is removed entirely. They can always return.</Bullet>
+                </Section>
+              </div>
+            )}
+
+            {/* ══ THE PHILOSOPHY ══ */}
+            {tab === "philosophy" && (
+              <div>
+                <Panel color="blue" style={{marginBottom:26}}>
+                  <P>
+                    These tools carry embedded assumptions about what privacy means, what sharing means,
+                    and what it costs a person to be witnessed. The philosophy below is not decoration.
+                    It is the architecture.
+                  </P>
+                </Panel>
+
+                <Section title="Sovereignty">
+                  <P>
+                    Every person's life is their own. Their All The Me That I Am file is theirs alone —
+                    the Crossroads has no access to it and never will. What crosses the threshold into
+                    this shared space is always a deliberate, conscious act by the individual.
+                    There is no automatic connection, no syncing, no pull.
+                  </P>
+                </Section>
+
+                <Section title="The mask is not deception">
+                  <P>
+                    The Privacy Review in All The Me That I Am exists so that a person can map their
+                    whole life honestly — including the parts they would never share — and then decide,
+                    one by one, what they are willing to be witnessed in.
+                  </P>
+                  <P>
+                    What is kept private is not hidden. It is sovereign. The mask is not deception —
+                    it is the right to a self that is not entirely public. Every human being has always
+                    had this right. These tools simply make it explicit and intentional.
+                  </P>
+                </Section>
+
+                <Section title="The Samurai at the crossroads">
+                  <Panel color="neutral">
+                    <P>
+                      In the old image, a samurai arrives at a crossroads fully formed — armed,
+                      centred, having already done the inner work. The crossroads is significant
+                      precisely because the samurai brought something to it. They were not summoned.
+                      They chose to arrive.
+                    </P>
+                    <P>
+                      The Crossroads only works if All The Me That I Am has done its job first.
+                      A person who has not reckoned with their own life has nothing to bring to
+                      the shared space. That is not a criticism. It is simply the order of things.
+                    </P>
+                  </Panel>
+                </Section>
+
+                <Section title="Three rules that are not features">
+                  <Panel color="teal" title="The Crossroads never summons">
+                    <P dim>
+                      No one is ever automatically connected. No notification is sent. No invitation
+                      issued. The act of bringing a Shared Self is entirely voluntary. This is what
+                      makes the space safe enough to be honest in.
+                    </P>
+                  </Panel>
+                  <Panel color="teal" title="Withdrawal is unconditional">
+                    <P dim>
+                      Any person can update their contribution or withdraw entirely at any time, for
+                      any reason, without explanation. The right to withdraw is not a feature.
+                      It is what makes every contribution meaningful.
+                    </P>
+                  </Panel>
+                  <Panel color="teal" title="The Crossroads does not judge">
+                    <P dim>
+                      A family where only one person brings a Shared Self is still a valid Crossroads.
+                      What is brought reflects what each person is ready for. The Crossroads simply
+                      holds what arrives.
+                    </P>
+                  </Panel>
+                </Section>
+              </div>
+            )}
+
+            {/* ══ HOW TO USE ══ */}
+            {tab === "howto" && (
+              <div>
+                <Section title="Step 1 — Build your private record first">
+                  <Panel color="blue">
+                    <P>
+                      Open All The Me That I Am and map your life. Be honest. Include what you
+                      might not share. Mark events private where you want to. The quality of your
+                      Shared Self depends on the quality of the private work done first.
+                    </P>
+                  </Panel>
+                </Section>
+
+                <Section title="Step 2 — Curate your Shared Self">
+                  <P>
+                    In All The Me That I Am, navigate to the <strong>Privacy (🔒) view</strong>.
+                    Here you will see all your events laid out with a toggle on each — shared or
+                    private. Review them thoughtfully. You can change any event's status at any time.
+                  </P>
+                  <P>
+                    When you are ready, click <strong>"⬆ Bring to the Crossroads."</strong> This
+                    generates a Shared Self file — a JSON export containing only your non-private
+                    events, your relationships, and your world events. It does not contain private
+                    events, your full backup, or any account or identity data.
+                  </P>
+                </Section>
+
+                <Section title="Step 3 — Bring it here">
+                  <P>
+                    Click <strong>"⬆ Receive a Shared Self"</strong> in the header above. Select
+                    your Shared Self file. The Crossroads identifies you by name and birth year.
+                    If you have brought a file before, your slot will be updated. If this is your
+                    first time, a new slot will be created.
+                  </P>
+                </Section>
+
+                <Section title="Updating your contribution">
+                  <P>
+                    Your life changes. Your willingness to share things may also change. You can
+                    bring a new Shared Self file at any time — from the <strong>Roster view</strong>,
+                    click <strong>"↑ Update"</strong> on your card. Your new file replaces the
+                    previous one entirely.
+                  </P>
+                  <Panel color="amber">
+                    <Note>
+                      There is no history of previous versions. When you update, the previous version
+                      is gone. This is by design — the Crossroads holds your current self, not an
+                      archive of every version of it.
+                    </Note>
+                  </Panel>
+                </Section>
+
+                <Section title="Withdrawing">
+                  <P>
+                    To remove yourself from the Crossroads entirely, click <strong>"Withdraw"</strong>{" "}
+                    on your card in the Roster. Your slot is deleted. You can always return with a
+                    new Shared Self file if you choose to.
+                  </P>
+                </Section>
+
+                <Section title="Who holds this file?">
+                  <P>
+                    In its current form, the Crossroads is a local HTML file — it lives on one
+                    person's machine and uses their browser's local storage. For small groups of
+                    two or three people, this works simply. For larger families, a hosted version
+                    is the intended destination.
+                  </P>
+                  <Panel color="red">
+                    <Note>
+                      ⚠ Because data is stored in your browser's local storage, clearing your
+                      browser data will erase the Crossroads entirely. Keep a note of whose Shared
+                      Self files you hold, so you can re-import if needed. Export regularly as
+                      a backup precaution.
+                    </Note>
+                  </Panel>
+                </Section>
+              </div>
+            )}
+
+            {/* ══ THE VIEWS ══ */}
+            {tab === "views" && (
+              <div>
+                <Panel color="blue" style={{marginBottom:26}}>
+                  <P>
+                    The Crossroads currently has four views. Each asks a different kind of question.
+                    A fifth view — Convergence — is planned.
+                  </P>
+                </Panel>
+
+                <Section title="Roster — who is here">
+                  <P>
+                    The Roster is the entry point and the register. It shows every person who has
+                    brought a Shared Self, with their basic details, the number of shared events,
+                    and when they last updated their contribution.
+                  </P>
+                  <P>
+                    From the Roster you can update any person's contribution or withdraw them
+                    entirely. The last-updated date tells you whether the Crossroads is current —
+                    a person who last brought their file three years ago may have lived a great
+                    deal since then.
+                  </P>
+                </Section>
+
+                <Section title="A Year — a moment in time, across all lives">
+                  <P>
+                    A Year places everyone at a single point in time. The slider moves through
+                    every year spanned by the shared events. For each year, every person's card
+                    shows what they were living — events that started that year, and longer
+                    periods that were still active.
+                  </P>
+                  <P>
+                    Move to the year of a significant event in your own life and see what everyone
+                    else was carrying at the same moment. The simultaneity is often surprising.
+                  </P>
+                  <Panel color="neutral">
+                    <Note>
+                      People who were not yet born in a given year, or whose life expectancy has
+                      passed, do not appear for that year. Only those who were alive and present
+                      are shown.
+                    </Note>
+                  </Panel>
+                </Section>
+
+                <Section title="One Life — a single shared self, seen whole">
+                  <P>
+                    One Life shows a single person's full shared record — all their events, either
+                    grouped by decade or by life layer. Group by decade to follow the chronological
+                    arc. Group by layer to see where someone's life has been concentrated — which
+                    layers are rich with shared events, and which are sparse or absent.
+                  </P>
+                </Section>
+
+                <Section title="Two Lives — side by side across time">
+                  <P>
+                    Two Lives places two people's shared records side by side, year by year, aligned
+                    on a central spine of years. Each year shows what each person was living.
+                    Only years with content in either life are displayed.
+                  </P>
+                  <Panel color="neutral">
+                    <Note>
+                      Only years where at least one person has shared an event are shown. Years
+                      where both people were alive but neither has recorded anything are invisible
+                      — they represent the limits of what was shared, not the limits of what was lived.
+                    </Note>
+                  </Panel>
+                </Section>
+
+                <Section title="Convergence — coming">
+                  <Panel color="teal">
+                    <P>
+                      A fifth view is planned: <strong>Convergence</strong>. Its purpose is to
+                      surface threads that run through multiple lives without anyone having planned
+                      them — events in the same layer, in the same year, carrying the same kind of
+                      weight, that no one at the Crossroads knew they shared.
+                    </P>
+                    <P dim>
+                      Convergence is not a search. It is a discovery instrument. It will not tell
+                      you what to look for. It will show you what is already there.
+                    </P>
+                  </Panel>
+                </Section>
+              </div>
+            )}
+
+            {/* ══ PRIVACY ══ */}
+            {tab === "privacy" && (
+              <div>
+                <Section title="What the Crossroads holds">
+                  <Panel color="teal">
+                    <Bullet>Events that each person explicitly marked as <strong>shared</strong> in their Privacy Review.</Bullet>
+                    <Bullet>Relationship strands (people) that were included in their Shared Self export.</Bullet>
+                    <Bullet>World events they chose to include.</Bullet>
+                    <Bullet>Basic biographical data: name, birth year, life expectancy.</Bullet>
+                  </Panel>
+                </Section>
+
+                <Section title="What the Crossroads does not hold">
+                  <Panel color="red">
+                    <Bullet><strong>Private events</strong> — marked private in ATTMTIA, never appear in any Shared Self file and are never visible here.</Bullet>
+                    <Bullet><strong>Full backup data</strong> — the Shared Self export is not a backup. It contains only shared content.</Bullet>
+                    <Bullet><strong>Any connection to the original file</strong> — there is no live link. No sync. No pull.</Bullet>
+                    <Bullet><strong>Historical versions</strong> — when a person updates their contribution, the previous version is gone.</Bullet>
+                  </Panel>
+                </Section>
+
+                <Section title="Local storage — what this means">
+                  <P>
+                    The Crossroads stores all data in your browser's local storage. This means:
+                  </P>
+                  <Bullet>No data is transmitted to any server.</Bullet>
+                  <Bullet>No account is required. No login. No tracking.</Bullet>
+                  <Bullet>Clearing your browser's data, or switching browsers or devices, will erase the Crossroads data.</Bullet>
+                  <Bullet>Private browsing / incognito mode may not save data between sessions.</Bullet>
+                  <Panel color="amber" style={{marginTop:12}}>
+                    <Note>
+                      Keep a record of whose Shared Self files you hold so you can re-import if
+                      your browser data is ever cleared. Export regularly.
+                    </Note>
+                  </Panel>
+                </Section>
+
+                <Section title="The ethical centre">
+                  <Panel color="neutral">
+                    <P>
+                      Privacy in this system is structural, not promised. It is not enforced by a
+                      policy or a terms of service. It is enforced by the architecture.
+                    </P>
+                    <P>
+                      The Crossroads cannot see what was kept private, because private events are
+                      never included in the Shared Self file — they are not present in the data at
+                      all. There is nothing to intercept. There is nothing to breach.
+                    </P>
+                    <P dim>This is the only design worth building.</P>
+                  </Panel>
+                </Section>
+              </div>
+            )}
+
+            {/* ══ VERSIONS ══ */}
+            {tab === "versions" && (
+              <div>
+                <Panel color="blue" title={`Current — Version ${VERSION} (${VERSION_DATE})`}>
+                  <Bullet label="MoMo Creative identity">Logo, branding, visible Contribute button, and full About modal added throughout.</Bullet>
+                  <Bullet label="Roster Update button">Fixed — the per-card Update handler now correctly saves changes to state (previously wired but not connected).</Bullet>
+                  <Bullet label="Context architecture">setPeople and handlePersonUpdate passed through context to all child components.</Bullet>
+                  <Bullet label="About modal">Fully rewritten — coloured panels, larger text, details/summary for version history, improved hierarchy.</Bullet>
+                  <Bullet label="Empty state">Updated with MoMo logo and link to About for new arrivals.</Bullet>
+                  <Bullet label="Version tracking">VERSION constant added at top of file for future reference.</Bullet>
+                </Panel>
+
+                <Section title="What's new in Version 1.1">
+                  <Panel color="teal">
+                    <Bullet label="Readability">About modal completely redesigned — coloured section panels, larger type, coloured panel backgrounds matching MoMo Creative's design language.</Bullet>
+                    <Bullet label="Contribute button">Visible ♡ Contribute button in header links directly to ko-fi.com/momocreative.</Bullet>
+                    <Bullet label="Header redesign">About modal header uses MoMo dark blue background, white title text, website link, version number.</Bullet>
+                    <Bullet label="Tab navigation">Underline-style active tab, larger click targets, clearer active state.</Bullet>
+                  </Panel>
+                </Section>
+
+                <details style={{ marginBottom:16 }}>
+                  <summary style={{ cursor:"pointer", fontSize:14, fontWeight:600,
+                    color:lightMode?"#3d6b8a":"#7EB6FF",
+                    fontFamily:"'DM Sans',system-ui,sans-serif", padding:"8px 0",
+                    borderBottom:`1px solid ${T.border}`, listStyle:"none",
+                    display:"flex", justifyContent:"space-between" }}>
+                    <span>Version 1.0 — First build</span>
+                    <span style={{opacity:0.5, fontSize:12}}>click to expand</span>
+                  </summary>
+                  <div style={{ paddingTop:12 }}>
+                    <Panel color="teal">
+                      <Bullet label="Roster view">Who is here, event counts, last-updated date, Withdraw.</Bullet>
+                      <Bullet label="A Year view">Slider across full time span, person cards with active events.</Bullet>
+                      <Bullet label="One Life view">Single person's shared self, grouped by decade or layer.</Bullet>
+                      <Bullet label="Two Lives view">Side-by-side year spine, both columns, age labels.</Bullet>
+                      <Bullet label="Import">Detects existing person by name + birthYear, updates or creates new slot.</Bullet>
+                      <Bullet label="Withdraw">Removes person entirely with confirmation.</Bullet>
+                      <Bullet label="Light/Dark mode">Full theme system matching All The Me That I Am.</Bullet>
+                      <Bullet label="Context architecture">setPeople and person-update handlers wired through React context.</Bullet>
+                    </Panel>
+                  </div>
+                </details>
+
+                <Section title="Planned — next">
+                  <Panel color="amber">
+                    <Bullet label="Convergence view">Discover shared threads across lives — same layers, same years, same weight — without searching for them.</Bullet>
+                    <Bullet label="Strand display">Relationships (strands) imported in Shared Selves are not yet surfaced in any view. They will be.</Bullet>
+                    <Bullet label="World events display">Shared world events are imported but not yet visible. Coming.</Bullet>
+                    <Bullet label="Hosted version">A server-hosted Crossroads for families too large for a local file. Cascading authority: Super Admin → Branch Admins → Members. The import mechanic stays the same — people still bring their own Shared Self deliberately.</Bullet>
+                  </Panel>
+                </Section>
+
+                <div style={{ fontSize:12, color:T.textDimmer, marginTop:16,
+                  fontFamily:"'DM Sans',system-ui,sans-serif", lineHeight:1.6 }}>
+                  Created by MoMo Creative · Perth, Western Australia<br/>
+                  Built collaboratively by Michael and Claude (Anthropic)
+                </div>
+              </div>
+            )}
+
+            {/* ══ CONTRIBUTE ══ */}
+            {tab === "contribute" && (
+              <div>
+                <div style={{ textAlign:"center", marginBottom:28 }}>
+                  <img src={momoIcon} alt="MoMo Creative"
+                    style={{ width:64, height:64, borderRadius:14, marginBottom:12,
+                      boxShadow:"0 4px 16px rgba(0,0,0,0.25)" }} />
+                  <div style={{ fontFamily:"'Cormorant Garamond',Georgia,serif",
+                    fontSize:22, color:T.text, marginBottom:4 }}>MoMo Creative</div>
+                  <div style={{ fontSize:14, color:T.textDim }}>Perth, Western Australia</div>
+                  <a href="https://the-clan.wixsite.com/momocreative" target="_blank"
+                    rel="noopener noreferrer" style={{
+                      display:"inline-block", marginTop:8, fontSize:14,
+                      color:lightMode?"#3d6b8a":"#7EB6FF", textDecoration:"none",
+                    }}>🌐 Visit our website</a>
+                </div>
+
+                <Section title="Where this came from">
+                  <P>
+                    These tools were not built as a technical exercise. They emerged from a genuine
+                    desire to see one life clearly — and then the realisation that the people I love
+                    are each living something I cannot fully see from where I stand.
+                  </P>
+                  <P>
+                    All The Me That I Am and The Crossroads were built collaboratively over many
+                    sessions, shaped by real personal context, real family arrangements, and a genuine
+                    philosophical framework about what a human life looks like when it is honestly
+                    examined.
+                  </P>
+                  <P>
+                    They are shared freely, for personal use. They carry no advertising, no tracking,
+                    no subscription. There is no account. There is nothing to sign up for.
+                  </P>
+                </Section>
+
+                <Section title="Support &amp; Contributions">
+                  <Panel color="amber" title="♡ Leave a tip">
+                    <P>
+                      These tools represent considerable time and thought. If you find them useful
+                      and would like to support their continued development, contributions are
+                      welcome but never expected.
+                    </P>
+                    <div style={{ marginTop:12, textAlign:"center" }}>
+                      <a href="https://ko-fi.com/momocreative" target="_blank"
+                        rel="noopener noreferrer" style={{
+                          display:"inline-block", padding:"10px 24px", borderRadius:6,
+                          background:lightMode?"#f39c12":"rgba(230,180,60,0.2)",
+                          border:`2px solid ${lightMode?"#f39c12":"#e8c468"}`,
+                          color:lightMode?"#fff":"#e8c468",
+                          fontFamily:"'DM Sans',system-ui,sans-serif",
+                          fontSize:15, fontWeight:600, textDecoration:"none",
+                          letterSpacing:"0.02em",
+                        }}>
+                        ☕ ko-fi.com/momocreative
+                      </a>
+                    </div>
+                  </Panel>
+
+                  <Panel color="teal" title="Tell someone">
+                    <P dim>
+                      If these tools helped you see something about your life or your family that
+                      you hadn't seen before — share them with someone who might need it.
+                      That is the most useful thing.
+                    </P>
+                  </Panel>
+
+                  <Panel color="blue" title="Send feedback">
+                    <P dim>
+                      If something doesn't work, or something should exist that doesn't, or you've
+                      used it in a way that surprised you — that information is genuinely useful.
+                      Get in touch through the MoMo Creative website.
+                    </P>
+                    <a href="https://the-clan.wixsite.com/momocreative" target="_blank"
+                      rel="noopener noreferrer" style={{
+                        fontSize:14, color:lightMode?"#2980b9":"#7EB6FF",
+                        textDecoration:"none", fontFamily:"'DM Sans',system-ui,sans-serif",
+                      }}>
+                      ✉ Get in touch with MoMo Creative
+                    </a>
+                  </Panel>
+                </Section>
+
+                <Section title="Licensing &amp; Usage">
+                  <Panel color="green">
+                    <Bullet label="Personal use">Free and unrestricted. Use it, share it with family and friends, adapt it for your own needs. If it helps you understand your life or your people, that is enough.</Bullet>
+                    <Bullet label="Commercial use">
+                      Not permitted without explicit written permission from MoMo Creative.
+                      This includes incorporating features, design elements, or code into commercial
+                      products or services.
+                    </Bullet>
+                    <Bullet label="Interested in commercial use?">
+                      We're open to conversations about licensing, partnerships, or custom development.{" "}
+                      <a href="https://the-clan.wixsite.com/momocreative" target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color:lightMode?"#27ae60":"#81C784", textDecoration:"none" }}>
+                        Get in touch.
+                      </a>
+                    </Bullet>
+                    <Bullet label="No warranty">Provided as is. This is a personal tool, not professional advice of any kind.</Bullet>
+                  </Panel>
+                </Section>
+
+                <div style={{
+                  marginTop:8, padding:"14px 16px", borderRadius:4,
+                  background: lightMode?"rgba(0,0,0,0.04)":"rgba(255,255,255,0.03)",
+                  border:`1px solid ${T.border}`,
+                  fontSize:13, color:T.textDimmer, lineHeight:1.7,
+                  fontFamily:"'DM Sans',system-ui,sans-serif", fontStyle:"italic",
+                }}>
+                  This app was built collaboratively by Michael and Claude (Anthropic) over many
+                  sessions. The aesthetic and the ethic are one thing here — any future development
+                  should honour both.
+                </div>
+              </div>
+            )}
+
+          </div>
+
+          {/* ─── Modal footer ─── */}
+          <div style={{
+            padding:"12px 28px", borderTop:`1px solid ${T.border}`,
+            display:"flex", justifyContent:"space-between", alignItems:"center",
+            flexShrink:0, background:T.bg3,
+          }}>
+            <div style={{ fontSize:12, color:T.textDimmer,
+              fontFamily:"'Cormorant Garamond',Georgia,serif", fontStyle:"italic" }}>
+              MoMo Creative · The Crossroads · v{VERSION}
+            </div>
+            <button onClick={onClose} style={{
+              ...S.btn, padding:"7px 22px", fontSize:14,
+            }}>Close</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── RENDER ───
+  const root = ReactDOM.createRoot(document.getElementById("root"));
+  root.render(<Crossroads/>);
+</script>
+</body>
+</html>
